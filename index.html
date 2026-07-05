@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自考论文选题自诊卡 2.0</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #f7f9fc;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 820px;
+            width: 100%;
+            background: #fff;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+            padding: 40px 35px;
+        }
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a2332;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+        .subtitle {
+            color: #6b7a8f;
+            font-size: 15px;
+            margin-bottom: 30px;
+            border-left: 4px solid #3b82f6;
+            padding-left: 16px;
+            background: #f0f4fe;
+            border-radius: 0 8px 8px 0;
+            line-height: 1.6;
+        }
+        .form-group {
+            margin-bottom: 22px;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            font-size: 15px;
+            color: #1e293b;
+            margin-bottom: 6px;
+        }
+        label .required {
+            color: #ef4444;
+            margin-left: 2px;
+        }
+        input,
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: border 0.2s;
+            background: #fafbfc;
+        }
+        input:focus,
+        select:focus {
+            border-color: #3b82f6;
+            outline: none;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        .hint {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+        .divider {
+            border: none;
+            border-top: 2px dashed #e9edf2;
+            margin: 28px 0;
+        }
+        .question-group {
+            background: #fafbfc;
+            border-radius: 16px;
+            padding: 20px 20px 10px;
+            margin-bottom: 16px;
+            border: 1px solid #eef2f6;
+        }
+        .question-group .q-title {
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 10px;
+            font-size: 15px;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .options label {
+            font-weight: 400;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 10px;
+            transition: background 0.15s;
+            background: #fff;
+            border: 1px solid #e9edf2;
+        }
+        .options label:hover {
+            background: #f1f5f9;
+        }
+        .options input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #3b82f6;
+            flex-shrink: 0;
+            margin: 0;
+        }
+        .options .score-hint {
+            color: #6b7a8f;
+            font-size: 12px;
+            margin-left: auto;
+        }
+        .btn {
+            width: 100%;
+            padding: 16px;
+            background: #1a2332;
+            color: #fff;
+            border: none;
+            border-radius: 14px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            margin-top: 10px;
+        }
+        .btn:hover {
+            background: #2d3a4f;
+        }
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        #result {
+            display: none;
+            margin-top: 35px;
+            padding-top: 30px;
+            border-top: 2px solid #eef2f6;
+        }
+        .score-summary {
+            display: flex;
+            align-items: baseline;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .total-score {
+            font-size: 52px;
+            font-weight: 800;
+            color: #1a2332;
+            line-height: 1;
+        }
+        .total-label {
+            font-size: 18px;
+            color: #6b7a8f;
+        }
+        .level-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 18px;
+            background: #e9edf2;
+            color: #1a2332;
+        }
+        .level-badge.excellent {
+            background: #dcfce7;
+            color: #166534;
+        }
+        .level-badge.good {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        .level-badge.caution {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .level-badge.poor {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .dimension-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 24px 0;
+        }
+        .dimension-item {
+            background: #f8fafc;
+            padding: 14px 16px;
+            border-radius: 14px;
+            border: 1px solid #eef2f6;
+        }
+        .dimension-item .d-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #334155;
+            display: flex;
+            justify-content: space-between;
+        }
+        .dimension-item .d-score {
+            font-weight: 700;
+            color: #0f172a;
+        }
+        .bar-bg {
+            width: 100%;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            margin-top: 6px;
+            overflow: hidden;
+        }
+        .bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            background: #3b82f6;
+            transition: width 0.6s ease;
+            width: 0%;
+        }
+        .bar-fill.high {
+            background: #22c55e;
+        }
+        .bar-fill.medium {
+            background: #eab308;
+        }
+        .bar-fill.low {
+            background: #ef4444;
+        }
+
+        .advice-box {
+            background: #f1f5f9;
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-top: 20px;
+        }
+        .advice-box h3 {
+            font-size: 16px;
+            color: #0f172a;
+            margin-bottom: 10px;
+        }
+        .advice-box ul {
+            padding-left: 22px;
+            color: #1e293b;
+            line-height: 1.8;
+        }
+        .advice-box ul li {
+            margin-bottom: 6px;
+        }
+        .advice-box .strong {
+            font-weight: 600;
+            color: #0f172a;
+        }
+        .footnote {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-top: 16px;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 24px 18px;
+            }
+            .dimension-grid {
+                grid-template-columns: 1fr;
+            }
+            .score-summary {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            .total-score {
+                font-size: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📋 自考论文选题自诊卡 2.0</h1>
+        <div class="subtitle">
+            输入你的专业和论文题目，回答四个关键问题，系统将自动评估选题的可行性，并给出专业化的优化建议。
+        </div>
+
+        <form id="diagnosisForm">
+            <!-- 学校 -->
+            <div class="form-group">
+                <label>🏫 学校 <span class="required">*</span></label>
+                <input type="text" id="school" placeholder="如：西南财经大学" required>
+                <div class="hint">用于归档记录，不影响评分</div>
+            </div>
+
+            <!-- 专业（核心字段，用于动态示例和专业化建议） -->
+            <div class="form-group">
+                <label>📚 专业 <span class="required">*</span></label>
+                <input type="text" id="major" placeholder="如：金融学、汉语言文学、小学教育" required>
+                <div class="hint">系统将根据专业匹配示例题目和专业化辅导建议</div>
+            </div>
+
+            <!-- 论文题目（动态placeholder） -->
+            <div class="form-group">
+                <label>✏️ 论文题目 <span class="required">*</span></label>
+                <input type="text" id="title" placeholder="请先填写专业，系统将自动推荐示例题目" required>
+                <div class="hint">请填写你的正式论文题目</div>
+            </div>
+
+            <hr class="divider">
+
+            <!-- 四个自评问题 -->
+            <div class="question-group">
+                <div class="q-title">1. 研究方法匹配度</div>
+                <div class="options" data-dimension="paradigm">
+                    <label><input type="radio" name="paradigm" value="20" required> 我非常清楚本专业的主流研究方法，并且计划严格遵循 <span class="score-hint">+20分</span></label>
+                    <label><input type="radio" name="paradigm" value="15"> 基本了解，但细节不太确定 <span class="score-hint">+15分</span></label>
+                    <label><input type="radio" name="paradigm" value="8"> 不太清楚，需要老师指导 <span class="score-hint">+8分</span></label>
+                    <label><input type="radio" name="paradigm" value="3"> 完全没概念，等老师安排 <span class="score-hint">+3分</span></label>
+                </div>
+            </div>
+
+            <div class="question-group">
+                <div class="q-title">2. 核心材料可及性</div>
+                <div class="options" data-dimension="material">
+                    <label><input type="radio" name="material" value="35" required> 我本人就在目标单位/机构工作，或已完整读过原著并有详细笔记 <span class="score-hint">+35分</span></label>
+                    <label><input type="radio" name="material" value="25"> 有熟人/同事能帮助提供，3天内可以解决 <span class="score-hint">+25分</span></label>
+                    <label><input type="radio" name="material" value="12"> 需要托关系，不确定能否拿到 <span class="score-hint">+12分</span></label>
+                    <label><input type="radio" name="material" value="5"> 基本拿不到，打算从网上找二手资料 <span class="score-hint">+5分</span></label>
+                </div>
+            </div>
+
+            <div class="question-group">
+                <div class="q-title">3. 研究颗粒度</div>
+                <div class="options" data-dimension="granularity">
+                    <label><input type="radio" name="granularity" value="25" required> 聚焦一个具体对象：一家公司/一部作品/一个年级/一个岗位 <span class="score-hint">+25分</span></label>
+                    <label><input type="radio" name="granularity" value="18"> 范围稍大，但可以通过副标题或限定词缩小 <span class="score-hint">+18分</span></label>
+                    <label><input type="radio" name="granularity" value="10"> 覆盖整个行业或多部作品、多个单位 <span class="score-hint">+10分</span></label>
+                    <label><input type="radio" name="granularity" value="5"> 非常大，如“我国”、“全行业”、“全部作品” <span class="score-hint">+5分</span></label>
+                </div>
+            </div>
+
+            <div class="question-group">
+                <div class="q-title">4. 操作可行性（时间）</div>
+                <div class="options" data-dimension="operation">
+                    <label><input type="radio" name="operation" value="20" required> 1周内能收齐核心材料，或已经读完原著 <span class="score-hint">+20分</span></label>
+                    <label><input type="radio" name="operation" value="15"> 2～3周可以完成问卷发放和回收/访谈 <span class="score-hint">+15分</span></label>
+                    <label><input type="radio" name="operation" value="8"> 需要1个月以上，要等特定时间节点 <span class="score-hint">+8分</span></label>
+                    <label><input type="radio" name="operation" value="3"> 不确定，可能3个月都搞不定 <span class="score-hint">+3分</span></label>
+                </div>
+            </div>
+
+            <button type="button" class="btn" id="diagnoseBtn">🔍 开始诊断</button>
+        </form>
+
+        <!-- ===== 结果区 ===== -->
+        <div id="result">
+            <div class="score-summary">
+                <div>
+                    <span class="total-score" id="totalScore">0</span>
+                    <span class="total-label">分</span>
+                </div>
+                <div>
+                    <span class="level-badge" id="levelBadge">—</span>
+                </div>
+            </div>
+
+            <div class="dimension-grid" id="dimensionGrid">
+                <div class="dimension-item">
+                    <div class="d-name"><span>范式匹配度</span><span class="d-score" id="d1">0/20</span></div>
+                    <div class="bar-bg"><div class="bar-fill" id="bar1"></div></div>
+                </div>
+                <div class="dimension-item">
+                    <div class="d-name"><span>材料可及性</span><span class="d-score" id="d2">0/35</span></div>
+                    <div class="bar-bg"><div class="bar-fill" id="bar2"></div></div>
+                </div>
+                <div class="dimension-item">
+                    <div class="d-name"><span>题目颗粒度</span><span class="d-score" id="d3">0/25</span></div>
+                    <div class="bar-bg"><div class="bar-fill" id="bar3"></div></div>
+                </div>
+                <div class="dimension-item">
+                    <div class="d-name"><span>操作可行性</span><span class="d-score" id="d4">0/20</span></div>
+                    <div class="bar-bg"><div class="bar-fill" id="bar4"></div></div>
+                </div>
+            </div>
+
+            <div class="advice-box" id="adviceBox">
+                <h3>📌 专业化辅导建议</h3>
+                <ul id="adviceList">
+                    <li>诊断完成后，这里将根据你的<strong>专业</strong>和<strong>题目</strong>生成针对性的建议。</li>
+                </ul>
+            </div>
+            <div class="footnote">* 本诊断基于你提供的信息，实际写作中仍需与指导老师充分沟通。</div>
+        </div>
+    </div>
+
+    <script>
+        // ================================================================
+        // 1. 专业 → 示例题目 映射表（动态placeholder）
+        // ================================================================
+        const majorExampleMap = {
+            '金融': 'J市小微企业融资困境与优化路径研究',
+            '会计': 'L公司销售与收款循环内部控制问题研究',
+            '财务': 'A公司财务共享服务中心运营效率优化研究',
+            '人力资源': 'M公司新生代员工激励机制优化研究',
+            '工商管理': 'D公司市场营销策略优化研究——基于4P理论',
+            '行政管理': '数字化转型背景下S街道社区治理能力提升研究',
+            '市场营销': '短视频平台内容营销对消费者购买意愿的影响研究——以X品牌为例',
+            '小学教育': '"双减"背景下小学班主任班级管理现状及优化策略研究',
+            '学前教育': '幼儿园家园共育中家长参与度提升策略研究——以X园为例',
+            '汉语言文学': '老舍《离婚》中的知识分子困境研究',
+            '英语': 'The Translation of Culture-loaded Words in The Story of the Stone',
+            '法学': '外卖骑手工伤认定中的法律困境与制度完善研究',
+            '社会工作': '城市独居老人社区支持网络构建的个案研究',
+            '心理学': '中学生考试焦虑与家庭教养方式的关系研究',
+            '护理学': '延续性护理对2型糖尿病患者自我管理能力的影响研究',
+            '艺术设计': '基于用户体验的校园导视系统设计——以X大学为例',
+            '计算机': '基于Spring Boot的在线考试系统设计与实现',
+            '工程管理': '装配式建筑项目中施工进度影响因素及控制策略研究'
+        };
+
+        // 获取专业输入框和题目输入框
+        const majorInput = document.getElementById('major');
+        const titleInput = document.getElementById('title');
+
+        // 当专业输入变化时，动态更新题目的placeholder
+        majorInput.addEventListener('input', function() {
+            const major = this.value.trim();
+            let example = '请先填写专业，系统将自动推荐示例题目';
+            for (const [key, value] of Object.entries(majorExampleMap)) {
+                if (major.includes(key)) {
+                    example = '示例：' + value;
+                    break;
+                }
+            }
+            titleInput.placeholder = example;
+        });
+
+        // 如果页面加载时已有专业内容，立即触发一次
+        if (majorInput.value.trim()) {
+            majorInput.dispatchEvent(new Event('input'));
+        }
+
+        // ================================================================
+        // 2. 专业 → 研究范式 映射（用于专业化建议）
+        // ================================================================
+        function getParadigmByMajor(major) {
+            const majorLower = major.toLowerCase();
+            if (majorLower.includes('汉语言') || majorLower.includes('文学') || majorLower.includes('英语')) {
+                return { type: '文本诠释型', desc: '精读原著，分析文本细节、叙事策略与思想内涵' };
+            }
+            if (majorLower.includes('会计') || majorLower.includes('财务') || majorLower.includes('人力') ||
+                majorLower.includes('管理') || majorLower.includes('营销') || majorLower.includes('工商') ||
+                majorLower.includes('行政') || majorLower.includes('小学教育') || majorLower.includes('学前教育') ||
+                majorLower.includes('护理') || majorLower.includes('金融')) {
+                return { type: '实证调研型', desc: '通过问卷、访谈、台账/报表数据收集一手资料，进行统计分析' };
+            }
+            if (majorLower.includes('法学') || majorLower.includes('社工') || majorLower.includes('心理') ||
+                majorLower.includes('教育管理')) {
+                return { type: '质性访谈型', desc: '通过深度访谈、个案追踪或公开判决书/政策文件进行案例分析' };
+            }
+            if (majorLower.includes('艺术') || majorLower.includes('设计') || majorLower.includes('动画') ||
+                majorLower.includes('计算机') || majorLower.includes('工程')) {
+                return { type: '设计实践型', desc: '完成一个具体作品/项目，记录从需求分析到成品的完整迭代过程' };
+            }
+            return { type: '请咨询指导老师', desc: '根据本专业主流研究方法确定' };
+        }
+
+        // ================================================================
+        // 3. 核心诊断函数
+        // ================================================================
+        function runDiagnosis() {
+            // ---- 收集输入 ----
+            const school = document.getElementById('school').value.trim();
+            const major = document.getElementById('major').value.trim();
+            const title = document.getElementById('title').value.trim();
+
+            if (!school || !major || !title) {
+                alert('请完整填写学校、专业和论文题目。');
+                return;
+            }
+
+            const paradigm = document.querySelector('input[name="paradigm"]:checked');
+            const material = document.querySelector('input[name="material"]:checked');
+            const granularity = document.querySelector('input[name="granularity"]:checked');
+            const operation = document.querySelector('input[name="operation"]:checked');
+
+            if (!paradigm || !material || !granularity || !operation) {
+                alert('请完成全部四个自评选择题。');
+                return;
+            }
+
+            const p = parseInt(paradigm.value);
+            const m = parseInt(material.value);
+            const g = parseInt(granularity.value);
+            const o = parseInt(operation.value);
+            const total = p + m + g + o;
+
+            // ---- 更新UI：总分 ----
+            document.getElementById('totalScore').textContent = total;
+
+            // ---- 等级 ----
+            let levelText, levelClass;
+            if (total >= 85) { levelText = '⭐⭐⭐⭐⭐ 强烈推荐';
+                levelClass = 'excellent'; } else if (total >= 70) { levelText = '⭐⭐⭐⭐ 推荐（微调后开写）';
+                levelClass = 'good'; } else if (total >= 55) { levelText = '⭐⭐⭐ 谨慎推荐（需较大调整）';
+                levelClass = 'caution'; } else if (total >= 40) { levelText = '⭐⭐ 不太推荐（建议换题）';
+                levelClass = 'poor'; } else { levelText = '⭐ 强烈不建议（直接否决）';
+                levelClass = 'poor'; }
+            const badge = document.getElementById('levelBadge');
+            badge.textContent = levelText;
+            badge.className = 'level-badge ' + levelClass;
+
+            // ---- 各维度进度条 ----
+            const dims = [
+                { id: 'd1', bar: 'bar1', score: p, max: 20 },
+                { id: 'd2', bar: 'bar2', score: m, max: 35 },
+                { id: 'd3', bar: 'bar3', score: g, max: 25 },
+                { id: 'd4', bar: 'bar4', score: o, max: 20 }
+            ];
+            dims.forEach(d => {
+                document.getElementById(d.id).textContent = `${d.score}/${d.max}`;
+                const percent = (d.score / d.max) * 100;
+                const bar = document.getElementById(d.bar);
+                bar.style.width = percent + '%';
+                if (percent >= 80) bar.className = 'bar-fill high';
+                else if (percent >= 50) bar.className = 'bar-fill medium';
+                else bar.className = 'bar-fill low';
+            });
+
+            // ---- 生成专业化建议 ----
+            const adviceItems = generateProfessionalAdvice(p, m, g, o, total, major, title);
+            const list = document.getElementById('adviceList');
+            list.innerHTML = adviceItems.map(item => `<li>${item}</li>`).join('');
+
+            // ---- 显示结果 ----
+            document.getElementById('result').style.display = 'block';
+            document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // ================================================================
+        // 4. 专业化建议生成器（核心升级）
+        // ================================================================
+        function generateProfessionalAdvice(p, m, g, o, total, major, title) {
+            const advices = [];
+            const paradigmInfo = getParadigmByMajor(major);
+
+            // ----- 4-A: 范式与研究方法建议（结合专业） -----
+            if (p < 18) {
+                advices.push(`🔹 <span class="strong">范式匹配度偏低（${p}/20）</span>。你的专业「${major}」通常采用「<strong>${paradigmInfo.type}</strong>」，核心是「${paradigmInfo.desc}」。建议你尽快明确具体研究方法，并主动向指导老师确认是否可行。`);
+            } else {
+                advices.push(`✅ <span class="strong">范式匹配度良好（${p}/20）</span>。你的专业「${major}」适合采用「<strong>${paradigmInfo.type}</strong>」，即「${paradigmInfo.desc}」，你的方向基本吻合。`);
+            }
+
+            // ----- 4-B: 本专业适合的写作方向（结合专业给出方向建议） -----
+            const directionAdvice = getDirectionAdvice(major, title);
+            if (directionAdvice) {
+                advices.push(`📌 <span class="strong">本专业选题方向参考：</span>${directionAdvice}`);
+            }
+
+            // ----- 4-C: 材料获取建议（结合专业） -----
+            if (m < 25) {
+                let materialSuggestion = '';
+                if (paradigmInfo.type === '文本诠释型') {
+                    materialSuggestion = '建议确认你是否已完整阅读原著并做了详细笔记。若尚未读完，请先通读全文再做选题，否则后续分析全是二手文献拼凑。';
+                } else if (paradigmInfo.type === '实证调研型') {
+                    materialSuggestion = '建议将研究对象更换为你本人所在或能直接接触的单位（如你工作的公司、你孩子就读的学校），通过同事/家长群发放问卷或获取台账数据。';
+                } else if (paradigmInfo.type === '质性访谈型') {
+                    materialSuggestion = '建议选择你方便进入的社区/学校/企业作为调研点，或聚焦中国裁判文书网上的公开判决书（法学适用），确保有足够案例支撑。';
+                } else if (paradigmInfo.type === '设计实践型') {
+                    materialSuggestion = '建议先完成一个具体的作品/项目，再围绕它写论文，否则没有成品作为核心论据。';
+                } else {
+                    materialSuggestion = '建议先确认核心材料的获取渠道，再正式启动写作。';
+                }
+                advices.push(`🔹 <span class="strong">材料获取风险较高（${m}/35）</span>。${materialSuggestion}`);
+            } else {
+                advices.push(`✅ <span class="strong">材料获取可行性较高（${m}/35）</span>。请尽快启动收集，并保留原始记录（问卷数据、访谈录音、作品草图等）作为论文附录。`);
+            }
+
+            // ----- 4-D: 范围细化建议（结合专业和题目） -----
+            if (g < 22) {
+                let granularitySuggestion = '';
+                if (paradigmInfo.type === '文本诠释型') {
+                    granularitySuggestion = '建议将范围缩小到一部具体作品（如从“鲁迅小说”改为“《祝福》”），或聚焦于一个具体人物/一个叙事视角/一个章节的象征意义。';
+                } else if (paradigmInfo.type === '实证调研型' || paradigmInfo.type === '质性访谈型') {
+                    granularitySuggestion = '建议增加副标题进行限定，如“——以XX公司/XX学校/XX社区为例”，将范围控制在一个具体组织或地域内。';
+                } else if (paradigmInfo.type === '设计实践型') {
+                    granularitySuggestion = '建议聚焦一个具体的设计项目或系统模块，如“基于用户体验的校园导视系统设计——以X大学为例”，而不是泛谈“UI设计研究”。';
+                } else {
+                    granularitySuggestion = '建议增加具体限定词（公司名/作品名/地名等），缩小研究范围。';
+                }
+                advices.push(`🔹 <span class="strong">研究范围偏大（${g}/25）</span>。${granularitySuggestion}`);
+            } else {
+                advices.push(`✅ <span class="strong">研究颗粒度精准（${g}/25）</span>，聚焦具体对象有利于深入分析。`);
+            }
+
+            // ----- 4-E: 时间规划建议 -----
+            if (o < 18) {
+                advices.push(`🔹 <span class="strong">时间安排较紧（${o}/20）</span>。建议简化研究设计：减少问卷题量（20题以内）、缩短访谈时间（每人20-30分钟）、或缩小样本量（有效问卷30份以上即可），确保3周内完成。`);
+            } else {
+                advices.push(`✅ <span class="strong">时间规划合理（${o}/20）</span>。建议制定详细日程：问卷设计（1天）→发放回收（1周）→数据分析（1周）→初稿框架（1周），按时推进。`);
+            }
+
+            // ----- 4-F: 题目专项检查（泛化词、作品名、理论视角等） -----
+            if (title.includes('我国') || title.includes('中国') || title.includes('全国')) {
+                advices.push('💡 <span class="strong">题目含“我国/中国/全国”等泛化词</span>，建议替换为具体地域或单位（如“J市”“L公司”），以增强研究的可操作性。');
+            }
+            if (paradigmInfo.type === '文本诠释型') {
+                const hasWork = /《.*》/.test(title);
+                if (!hasWork) {
+                    advices.push('💡 <span class="strong">未检测到具体作品名</span>。汉语言文学/英语文学类论文通常需锚定一部具体作品（如《祝福》《离婚》），请确认题目中是否包含书名号。');
+                }
+            }
+            if (title.includes('现状及对策') || title.includes('现状与对策')) {
+                advices.push('💡 <span class="strong">“现状及对策”框架略显平淡</span>。建议增加一个理论视角或限定维度，如“基于双因素理论的XX公司员工激励优化研究”，提升论文的理论深度。');
+            }
+
+            // ----- 4-G: 总分整体评价 -----
+            if (total >= 85) {
+                advices.push('🎉 <span class="strong">整体评价：选题非常合适</span>，按当前方向直接开写。建议尽快与指导老师沟通框架，争取一次性通过。');
+            } else if (total >= 70) {
+                advices.push('📈 <span class="strong">整体评价：选题基础良好</span>，只需按上述建议微调（如缩小范围、明确材料来源），即可进入写作阶段。');
+            } else if (total >= 55) {
+                advices.push('⚠️ <span class="strong">整体评价：选题存在明显短板</span>，建议优先解决“材料获取”和“范围控制”两个核心问题，否则写作难度较大。');
+            } else {
+                advices.push('🚫 <span class="strong">整体评价：当前选题风险极高</span>，强烈建议更换。建议选择你日常工作/学习中最熟悉的领域，例如若你在某公司工作，可写该公司的内部管理问题，数据易得且答辩有说服力。');
+            }
+
+            return advices;
+        }
+
+        // ================================================================
+        // 5. 专业方向建议（结合专业给出具体写作方向）
+        // ================================================================
+        function getDirectionAdvice(major, title) {
+            const majorLower = major.toLowerCase();
+            if (majorLower.includes('金融')) {
+                return '金融学常见方向：商业银行信贷风险、小微企业融资、绿色金融、数字普惠金融、家庭资产配置。建议聚焦一家具体的银行或一个具体的地域，用台账或问卷数据做实证分析。';
+            }
+            if (majorLower.includes('会计') || majorLower.includes('财务')) {
+                return '会计/财务常见方向：内部控制（销售与收款/采购与付款循环）、财务共享服务中心效率、全面预算管理、成本控制。建议聚焦一个具体企业的具体业务循环，拿报表或审批流程数据。';
+            }
+            if (majorLower.includes('人力资源') || majorLower.includes('人力')) {
+                return '人力资源常见方向：新生代员工激励、培训效果评估、薪酬公平感、招聘渠道有效性、离职率分析。建议聚焦一个具体公司+一个具体岗位序列（如销售/技术），通过问卷和离职访谈获取数据。';
+            }
+            if (majorLower.includes('工商管理') || majorLower.includes('管理') || majorLower.includes('营销')) {
+                return '工商管理/营销常见方向：营销策略优化（4P/STP）、品牌建设、消费者行为、渠道管理、新媒体营销。建议聚焦一条产品线+一个具体区域，用消费者问卷或销售台账做分析。';
+            }
+            if (majorLower.includes('行政')) {
+                return '行政管理常见方向：基层治理能力、政务服务数字化、社区公共服务满意度、公共危机应对。建议聚焦一个具体街道/社区，通过居民问卷或工作人员访谈获取一手资料。';
+            }
+            if (majorLower.includes('小学教育')) {
+                return '小学教育常见方向：“双减”后班级管理、课后服务设计、家校沟通、学困生转化、核心素养培养。建议聚焦一所具体小学+一个具体年级/岗位（如班主任），通过教师问卷和访谈获取数据。';
+            }
+            if (majorLower.includes('学前教育')) {
+                return '学前教育常见方向：家园共育、游戏化教学、幼儿行为观察、幼小衔接、区域活动设计。建议聚焦一所具体幼儿园+一个具体班级或活动类型，通过观察记录和教师访谈获取资料。';
+            }
+            if (majorLower.includes('汉语言文学') || majorLower.includes('文学')) {
+                return '汉语言文学常见方向：小说叙事分析、人物形象研究、女性书写、知识分子困境、城乡叙事、文体演变。建议聚焦一部具体作品+一个具体分析维度（如叙事视角/人物关系/象征意象），形成与学界已有研究的对话。';
+            }
+            if (majorLower.includes('英语')) {
+                return '英语专业常见方向：翻译策略（文化负载词/隐喻/诗歌翻译）、文学叙事分析（女性主义/后殖民）、二语习得、跨文化交际。建议聚焦一部具体作品或一个具体翻译案例，做文本细读或对比分析。';
+            }
+            if (majorLower.includes('法学')) {
+                return '法学常见方向：劳动法（外卖骑手/网约车司机权益）、合同法实务、侵权责任、知识产权、婚姻家庭纠纷。建议聚焦一个具体案由，以中国裁判文书网的公开判决书为主要分析素材。';
+            }
+            if (majorLower.includes('社工')) {
+                return '社会工作常见方向：老年人/儿童/残障群体服务、社区社会组织培育、困境家庭个案工作、精神健康服务。建议聚焦一个具体社区或机构，通过3-5个深度个案访谈进行质性分析。';
+            }
+            if (majorLower.includes('心理')) {
+                return '心理学常见方向：焦虑/抑郁影响因素、家庭教养方式、职业倦怠、学习动机、人际关系。建议聚焦一个具体群体（如中学生/企业员工），用量表问卷做定量分析，或通过个案咨询记录做质性研究。';
+            }
+            if (majorLower.includes('护理')) {
+                return '护理学常见方向：延续性护理、慢病管理（糖尿病/高血压）、老年护理、术后康复、心理健康干预。建议聚焦一家具体医院或社区中心，以患者护理记录或护理满意度问卷为数据来源。';
+            }
+            if (majorLower.includes('艺术') || majorLower.includes('设计')) {
+                return '艺术设计常见方向：品牌视觉设计、UI/UX设计、包装设计、空间导视系统、文创产品设计。建议聚焦一个具体项目，展示从用户调研→草图→原型→成品的完整迭代过程。';
+            }
+            if (majorLower.includes('计算机')) {
+                return '计算机常见方向：信息系统开发（XX管理系统/在线平台）、算法优化、数据分析应用、微信小程序开发。建议聚焦一个具体系统模块，展示需求分析→架构设计→核心代码→测试的全过程。';
+            }
+            if (majorLower.includes('工程管理')) {
+                return '工程管理常见方向：施工进度控制、质量安全管理、成本控制、BIM技术应用、装配式建筑管理。建议聚焦一个具体项目，以项目文档和进度数据为分析素材。';
+            }
+            return null;
+        }
+
+        // ================================================================
+        // 6. 绑定事件
+        // ================================================================
+        document.getElementById('diagnoseBtn').addEventListener('click', runDiagnosis);
+        document.getElementById('diagnosisForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            runDiagnosis();
+        });
+    </script>
+</body>
+</html>
